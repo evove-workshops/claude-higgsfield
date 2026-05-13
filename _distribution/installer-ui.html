@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Workshop Setup · Claude Cowork + Higgsfield MCP</title>
+<style>
+  :root {
+    --navy: #0D2B6B;
+    --royal: #1A4FB5;
+    --orange: #E87722;
+    --paper: #F7F8FC;
+    --ink: #0B1530;
+    --muted: #5B6479;
+    --line: #E1E5EE;
+    --good: #1F8F4E;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+    line-height: 1.55;
+    min-height: 100vh;
+  }
+  header {
+    background: linear-gradient(135deg, var(--navy) 0%, var(--royal) 100%);
+    color: #fff;
+    padding: 48px 24px 40px;
+    text-align: center;
+  }
+  header .tag {
+    display: inline-block;
+    background: rgba(255,255,255,0.12);
+    color: #fff;
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+  header h1 {
+    margin: 0 0 8px;
+    font-size: 32px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+  header p { margin: 0; opacity: 0.85; font-size: 16px; }
+
+  main {
+    max-width: 880px;
+    margin: -28px auto 64px;
+    padding: 0 24px;
+  }
+  .card {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 28px;
+    margin-bottom: 24px;
+    box-shadow: 0 12px 32px rgba(13, 43, 107, 0.06);
+  }
+  .card h2 {
+    margin: 0 0 8px;
+    color: var(--navy);
+    font-size: 22px;
+  }
+  .card p { color: var(--muted); margin: 0 0 16px; }
+
+  .accounts {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin: 0 0 4px;
+  }
+  @media (max-width: 560px) {
+    .accounts { grid-template-columns: 1fr; }
+  }
+  .account {
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .account .badge {
+    display: inline-block;
+    background: rgba(232, 119, 34, 0.12);
+    color: var(--orange);
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 3px 8px;
+    border-radius: 4px;
+    align-self: flex-start;
+  }
+  .account h3 {
+    margin: 0;
+    font-size: 16px;
+    color: var(--navy);
+  }
+  .account p { margin: 0; font-size: 13px; color: var(--muted); }
+  .account a.btn {
+    display: inline-block;
+    margin-top: 8px;
+    align-self: flex-start;
+    background: var(--navy);
+    color: #fff;
+    text-decoration: none;
+    padding: 8px 14px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+  }
+  .account a.btn:hover { background: var(--royal); }
+  .account a.btn.secondary { background: transparent; color: var(--royal); border: 1px solid var(--line); }
+  .account a.btn.secondary:hover { border-color: var(--royal); }
+
+  .note {
+    background: #FFF7EB;
+    border: 1px solid #F3D9B0;
+    color: #6B3F09;
+    padding: 12px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    margin: 16px 0 0;
+  }
+  .note strong { color: #4A2C05; }
+
+  .os-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid var(--line);
+  }
+  .os-tabs button {
+    flex: 1;
+    padding: 12px 16px;
+    background: transparent;
+    border: 0;
+    border-bottom: 3px solid transparent;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--muted);
+    cursor: pointer;
+    transition: color 0.15s, border-color 0.15s;
+  }
+  .os-tabs button.active {
+    color: var(--navy);
+    border-bottom-color: var(--orange);
+  }
+
+  .cmd-block {
+    display: none;
+    position: relative;
+    background: #0B1530;
+    color: #E8ECF6;
+    border-radius: 10px;
+    padding: 18px 56px 18px 18px;
+    font-family: "SF Mono", Menlo, Consolas, monospace;
+    font-size: 13px;
+    line-height: 1.6;
+    overflow-x: auto;
+    white-space: pre;
+  }
+  .cmd-block.active { display: block; }
+  .copy-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: var(--orange);
+    color: #fff;
+    border: 0;
+    border-radius: 6px;
+    padding: 6px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .copy-btn:hover { filter: brightness(1.08); }
+  .copy-btn.copied { background: var(--good); }
+
+  ol.steps {
+    counter-reset: step;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  ol.steps li {
+    counter-increment: step;
+    display: flex;
+    gap: 14px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--line);
+    cursor: pointer;
+    align-items: flex-start;
+  }
+  ol.steps li:last-child { border-bottom: 0; }
+  ol.steps li::before {
+    content: counter(step);
+    flex: 0 0 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    color: var(--muted);
+    font-weight: 700;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+  }
+  ol.steps li.done::before {
+    content: "✓";
+    background: var(--good);
+    border-color: var(--good);
+    color: #fff;
+  }
+  ol.steps li.done .step-title { text-decoration: line-through; color: var(--muted); }
+  .step-title { font-weight: 600; color: var(--ink); }
+  .step-detail { color: var(--muted); font-size: 14px; }
+  .step-detail code { background: var(--paper); padding: 1px 5px; border-radius: 4px; font-size: 12px; }
+
+  .done-card {
+    display: none;
+    text-align: center;
+    background: linear-gradient(135deg, #1F8F4E 0%, #16A34A 100%);
+    color: #fff;
+    border: 0;
+  }
+  .done-card.visible { display: block; }
+  .done-card h2 { color: #fff; }
+  .done-card p { color: rgba(255,255,255,0.9); }
+
+  footer {
+    text-align: center;
+    color: var(--muted);
+    font-size: 13px;
+    padding: 24px 16px 48px;
+  }
+  footer a { color: var(--royal); text-decoration: none; }
+  footer a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+  <header>
+    <div class="tag">OPEN Interactive Global · Workshop Setup</div>
+    <h1>Claude Cowork + Higgsfield MCP</h1>
+    <p>Three quick steps before the workshop: set up two accounts, run one command, and confirm everything's connected.</p>
+  </header>
+
+  <main>
+    <!-- Prereqs card -->
+    <section class="card">
+      <h2>1. Set up your two accounts</h2>
+      <p>You'll need a <strong>paid Claude plan</strong> (Cowork is only available on Pro, Max, or Team) and a free Higgsfield account. Do this <em>before</em> running the installer — the installer expects both to exist.</p>
+
+      <div class="accounts">
+        <div class="account">
+          <span class="badge">Required</span>
+          <h3>Claude Pro</h3>
+          <p>Cowork is part of the Claude Desktop app and currently requires a paid plan. Pro is the most common choice for individual attendees.</p>
+          <a class="btn" href="https://claude.ai/upgrade" target="_blank" rel="noopener">Get Claude Pro →</a>
+        </div>
+        <div class="account">
+          <span class="badge">Required</span>
+          <h3>Higgsfield</h3>
+          <p>The MCP server we'll connect inside Cowork. A free account is fine for the workshop.</p>
+          <a class="btn secondary" href="https://higgsfield.ai" target="_blank" rel="noopener">Sign up at higgsfield.ai →</a>
+        </div>
+      </div>
+
+      <div class="note">
+        <strong>Heads-up:</strong> if you skip the Claude plan, the <em>Cowork tab will not appear</em> in Claude Desktop after install. The installer can't fix that — only the plan does.
+      </div>
+    </section>
+
+    <!-- Command card -->
+    <section class="card">
+      <h2>2. Run the setup command</h2>
+      <p>Pick your operating system, copy the command, then paste into a fresh Terminal (macOS) or PowerShell (Windows) window.</p>
+
+      <div class="os-tabs" role="tablist">
+        <button class="active" data-os="mac" role="tab">macOS</button>
+        <button data-os="win" role="tab">Windows</button>
+      </div>
+
+      <div class="cmd-block active" data-os="mac">
+        <button class="copy-btn" data-copy="mac">Copy</button>
+<span>curl -fsSL https://raw.githubusercontent.com/evove-workshops/claude-higgsfield/main/scripts/workshop-setup-mac.sh | bash</span>
+      </div>
+
+      <div class="cmd-block" data-os="win">
+        <button class="copy-btn" data-copy="win">Copy</button>
+<span>iwr -useb https://raw.githubusercontent.com/evove-workshops/claude-higgsfield/main/scripts/workshop-setup-windows.ps1 | iex</span>
+      </div>
+    </section>
+
+    <!-- Checklist card -->
+    <section class="card">
+      <h2>3. Confirm you're ready</h2>
+      <p>Click each row as it's true. When all five are checked, you're set for the workshop.</p>
+      <ol class="steps" id="steps">
+        <li><div><div class="step-title">Setup script finished</div><div class="step-detail">Terminal shows the green "Setup complete!" banner.</div></div></li>
+        <li><div><div class="step-title">Claude Desktop is installed and open</div><div class="step-detail">The app launched automatically after the script ran.</div></div></li>
+        <li><div><div class="step-title">Signed in with your Claude Pro account</div><div class="step-detail">Use the same email that's on your paid plan — that's what unlocks Cowork.</div></div></li>
+        <li><div><div class="step-title">Cowork tab is visible</div><div class="step-detail">You see <strong>Chat</strong> and <strong>Cowork</strong> in the Claude Desktop sidebar. If you don't, your account isn't on a paid plan yet — go back to Step 1.</div></div></li>
+        <li><div><div class="step-title">Higgsfield MCP shows connected</div><div class="step-detail">Open Cowork → Settings → MCP servers. <code>higgsfield</code> is listed and shows green/connected after you sign in to Higgsfield in the browser.</div></div></li>
+      </ol>
+    </section>
+
+    <!-- All done card -->
+    <section class="card done-card" id="done">
+      <h2>You're set - see you in the room</h2>
+      <p>Bring your laptop, charger, and your two account logins. Doors open ahead of start time.</p>
+    </section>
+  </main>
+
+  <footer>
+    Stuck? Email <a href="mailto:adam@madebyopen.com">adam@madebyopen.com</a> · OPEN Interactive Global, LLC
+  </footer>
+
+<script>
+  // OS tab switching
+  const tabs = document.querySelectorAll('.os-tabs button');
+  const blocks = document.querySelectorAll('.cmd-block');
+  tabs.forEach(t => t.addEventListener('click', () => {
+    tabs.forEach(x => x.classList.toggle('active', x === t));
+    blocks.forEach(b => b.classList.toggle('active', b.dataset.os === t.dataset.os));
+  }));
+
+  // Copy buttons
+  document.querySelectorAll('.copy-btn').forEach(btn => {
+    btn.addEventListener('click', async (e) => {
+      e.stopPropagation();
+      const block = btn.parentElement;
+      const text = block.querySelector('span').textContent.trim();
+      try {
+        await navigator.clipboard.writeText(text);
+      } catch {
+        const ta = document.createElement('textarea');
+        ta.value = text; document.body.appendChild(ta);
+        ta.select(); document.execCommand('copy'); ta.remove();
+      }
+      btn.textContent = 'Copied';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 1800);
+    });
+  });
+
+  // Step checklist
+  const steps = document.querySelectorAll('#steps li');
+  const done = document.getElementById('done');
+  function refresh() {
+    const allDone = [...steps].every(li => li.classList.contains('done'));
+    done.classList.toggle('visible', allDone);
+  }
+  steps.forEach(li => li.addEventListener('click', () => {
+    li.classList.toggle('done');
+    refresh();
+  }));
+</script>
+</body>
+</html>
