@@ -144,11 +144,11 @@ if (Test-Path $ConfigFile) {
     Ok "Wrote new config to $ConfigFile"
 }
 
-# ----- 5. Pre-warm the mcp-remote bridge -----
-Log "Pre-fetching mcp-remote (one-time)..."
-try { npx -y mcp-remote --help | Out-Null } catch { Warn "mcp-remote pre-fetch returned non-zero - it will still work on first run." }
-
-# ----- 6. Launch Claude Desktop -----
+# ----- 5. Launch Claude Desktop -----
+# Note: mcp-remote installs on-demand via npx the first time Higgsfield is invoked
+# from inside Cowork. We intentionally don't pre-warm it here, because mcp-remote
+# tries to start an OAuth flow whenever it runs (which would pop a blank browser
+# tab during setup and confuse the user).
 if ($ClaudeExe -and (Test-Path $ClaudeExe)) {
     Log "Launching Claude Desktop..."
     Start-Process -FilePath $ClaudeExe
@@ -156,7 +156,7 @@ if ($ClaudeExe -and (Test-Path $ClaudeExe)) {
     Warn "Could not locate Claude.exe to launch - open Claude from the Start menu."
 }
 
-# ----- 7. Done -----
+# ----- 6. Done -----
 Write-Host ""
 Write-Host "================================================================" -ForegroundColor Green
 Write-Host "  Setup complete!"                                                  -ForegroundColor Green

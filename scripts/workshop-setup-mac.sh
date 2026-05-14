@@ -135,17 +135,17 @@ JSON
 fi
 ok "Higgsfield MCP entry written to $CONFIG_FILE"
 
-# ----- 5. Pre-warm the mcp-remote bridge so first launch is faster -----
-log "Pre-fetching mcp-remote (one-time)..."
-npx -y mcp-remote --help >/dev/null 2>&1 || warn "mcp-remote pre-fetch returned non-zero - it will still work on first run."
-
-# ----- 6. Launch Claude Desktop -----
+# ----- 5. Launch Claude Desktop -----
+# Note: mcp-remote installs on-demand via npx the first time Higgsfield is invoked
+# from inside Cowork. We intentionally don't pre-warm it here, because mcp-remote
+# tries to start an OAuth flow whenever it runs (which would pop a blank browser
+# tab during setup and confuse the user).
 if [[ -d "/Applications/Claude.app" ]]; then
   log "Launching Claude Desktop..."
   open -a "Claude" || warn "Could not auto-launch Claude. Open it from /Applications."
 fi
 
-# ----- 7. Done -----
+# ----- 6. Done -----
 printf '\n\033[1;32m'
 printf '================================================================\n'
 printf '  Setup complete!\n'
